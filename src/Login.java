@@ -3,17 +3,25 @@ import java.awt.CardLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.StringTokenizer;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
 public class Login extends JPanel implements ActionListener {
 	JLabel user = new JLabel("username: ");
 	JTextField userText = new JTextField();
 	JLabel password = new JLabel("password: ");
-	JTextField passwordText = new JTextField();
+	JPasswordField passwordText = new JPasswordField();
 	JPanel loginPanel = new JPanel(new GridLayout(3,2));
 	JPanel fpanel = new JPanel();
 	Button login = new Button("login");
@@ -38,8 +46,46 @@ public class Login extends JPanel implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
 		// TODO Auto-generated method stub
-		add(new Register(), "register");
-		cl.show(this, "register");
+		if(arg0.getSource() == login){
+			try {
+				BufferedReader input = new BufferedReader(new FileReader("passwords.txt"));
+				String pass = null;
+				String line = input.readLine();
+				while(line != null){
+					StringTokenizer st = new StringTokenizer(line);
+					if(userText.getText().equals(st.nextToken())){
+						pass = st.nextToken();
+					}
+					line = input.readLine();
+				}
+				input.close();
+				MessageDigest md = MessageDigest.getInstance("SHA-256");
+				md.update(new String(passwordText.getPassword()).getBytes());
+				byte byteData[] = md.digest();
+				StringBuffer sb = new StringBuffer();
+				for(int i = 0; i<byteData.length; i++){
+					sb.append(Integer.toString((byteData[i] & 0xFF)+ 0x100, 16).substring(1));
+				}
+				if(pass.equals(sb.toString())){
+					System.out.println("user has logged in");
+				}
+			} catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (NoSuchAlgorithmException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+		}
+		if(arg0.getSource() == register){
+			add(new Register(), "register");
+			cl.show(this, "register");
+		}
+
 	}
 
 	public static void main(String[] args){
