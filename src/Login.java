@@ -27,20 +27,21 @@ public class Login extends JPanel implements ActionListener {
 		loginPanel.add(passwordText);
 		loginPanel.add(login);
 		loginPanel.add(register);
-		
+
 		login.addActionListener(this);
 		register.addActionListener(this);
 		fpanel.add(loginPanel);
 		add(fpanel, "login");
 		cl = (CardLayout) getLayout();
-		
+
 	}
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
 		// TODO Auto-generated method stub
-
+		add(new Register(), "register");
+		cl.show(this, "register");
 	}
-	
+
 	public static void main(String[] args){
 		JFrame frame = new JFrame("text Editor");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);;
